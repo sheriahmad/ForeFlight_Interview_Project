@@ -49,102 +49,109 @@ public class ForeFlightProject {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter Airport Code: ");
 
-        airportCode = bufferedReader.readLine();
+        //airportCode = bufferedReader.readLine();
 
         WEATHER_RESPONSE = new StringBuffer();
         AIRPORT_RESPONSE = new StringBuffer();
-        
 
-        //API call to airports
-        callAPI(airportCode);
+        String[] userInput = bufferedReader.readLine().split(",");
+
+        for (int i = 0; i < userInput.length; i++) {
+            airportCode = userInput[i];
+            System.out.println("code in for: " + airportCode);
+            callAPI(airportCode);
 
 
-        //Read JSON response and print
-        JSONObject theAirportResponse = new JSONObject(AIRPORT_RESPONSE.toString());
-        JSONObject theWeatherResponse = new JSONObject(WEATHER_RESPONSE.toString());
+            //API call to airports
+//      callAPI(airportCode);
 
-        double temp = (double) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get("tempC");
-        double mphSpeed = (double) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
-                getJSONObject("wind").get("speedKts");
-        int windDegrees = (int) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
-                getJSONObject("wind").get("from");
 
-        SimpleDateFormat inputFormat  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+SSSS");
-        Date firstPeriod = inputFormat.parse(String.valueOf( theWeatherResponse.getJSONObject("report").getJSONObject(
-                "forecast").getJSONArray(
-                "conditions").getJSONObject(1).getJSONObject("period").get("dateStart")));
+            //Read JSON response and print
+            JSONObject theAirportResponse = new JSONObject(AIRPORT_RESPONSE.toString());
+            JSONObject theWeatherResponse = new JSONObject(WEATHER_RESPONSE.toString());
 
-        Date secondPeriod = inputFormat.parse(String.valueOf(theWeatherResponse.getJSONObject("report").getJSONObject("forecast").getJSONArray(
-                "conditions").getJSONObject(2).getJSONObject("period").get("dateStart")));
+            double temp = (double) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get("tempC");
+            double mphSpeed = (double) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
+                    getJSONObject("wind").get("speedKts");
+            int windDegrees = (int) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
+                    getJSONObject("wind").get("from");
 
-        System.out.println("Result after Reading JSON Response"
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+SSSS");
+            Date firstPeriod = inputFormat.parse(String.valueOf(theWeatherResponse.getJSONObject("report").getJSONObject(
+                    "forecast").getJSONArray(
+                    "conditions").getJSONObject(1).getJSONObject("period").get("dateStart")));
 
-                + "\n" +
-                "The Airport Identifier : " + theAirportResponse.getString("icao")
+            Date secondPeriod = inputFormat.parse(String.valueOf(theWeatherResponse.getJSONObject("report").getJSONObject("forecast").getJSONArray(
+                    "conditions").getJSONObject(2).getJSONObject("period").get("dateStart")));
 
-                + "\n" +
-                "Name : " + theAirportResponse.getString("name")
+            System.out.println("Result after Reading JSON Response"
 
-                + "\n" +
-                "Runways : " + theAirportResponse.get("runways")
+                    + "\n" +
+                    "The Airport Identifier : " + theAirportResponse.getString("icao")
 
-                + "\n" +
-                "Latitude : " + theAirportResponse.get("latitudeSecsNorth")
+                    + "\n" +
+                    "Name : " + theAirportResponse.getString("name")
 
-                + "\n" +
-                "Longitude : " + theAirportResponse.get("longitudeSecsEast")
+                    + "\n" +
+                    "Runways : " + theAirportResponse.get("runways")
 
-                + "\n" +
-                "Temperature in Fahrenheit: " + convertTemp(temp)
+                    + "\n" +
+                    "Latitude : " + theAirportResponse.get("latitudeSecsNorth")
 
-                + "\n" +
-                "Relative Humidity: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get(
-                "relativeHumidity")
+                    + "\n" +
+                    "Longitude : " + theAirportResponse.get("longitudeSecsEast")
 
-                + "\n" +
-                "Cloud Coverage: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get(
-                "cloudLayers")
+                    + "\n" +
+                    "Temperature in Fahrenheit: " + convertTemp(temp)
 
-                + "\n" +
-                "Distance SM: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
-                getJSONObject("visibility").get("distanceSm")
+                    + "\n" +
+                    "Relative Humidity: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get(
+                    "relativeHumidity")
 
-                + "\n" +
-                "Wind Speed MPH: " + String.format("%.2f", convertSpeed(mphSpeed))
+                    + "\n" +
+                    "Cloud Coverage: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get(
+                    "cloudLayers")
 
-                + "\n" +
-                "Wind direction: " + convertDegrees(windDegrees)
+                    + "\n" +
+                    "Distance SM: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
+                    getJSONObject("visibility").get("distanceSm")
 
-                + "\n" +
-                "First Forecast Report Time: " + firstPeriod
+                    + "\n" +
+                    "Wind Speed MPH: " + String.format("%.2f", convertSpeed(mphSpeed))
 
-                + "\n" +
-                "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject(
-                        "forecast").getJSONArray(
-                "conditions").getJSONObject(1).getJSONObject("wind").get("speedKts"))
+                    + "\n" +
+                    "Wind direction: " + convertDegrees(windDegrees)
 
-                + "\n" +
-                "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject(
-                        "forecast").getJSONArray(
-                "conditions").getJSONObject(1).getJSONObject("wind").get("direction")
+                    + "\n" +
+                    "First Forecast Report Time: " + firstPeriod
 
-                + "\n" +
-                "Second Forecast Report Time: " + secondPeriod
+                    + "\n" +
+                    "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject(
+                    "forecast").getJSONArray(
+                    "conditions").getJSONObject(1).getJSONObject("wind").get("speedKts"))
 
-                + "\n" +
-                "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject(
-                        "forecast").getJSONArray(
-                "conditions").getJSONObject(2).getJSONObject("wind").get("speedKts"))
+                    + "\n" +
+                    "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject(
+                    "forecast").getJSONArray(
+                    "conditions").getJSONObject(1).getJSONObject("wind").get("direction")
 
-                + "\n" +
-                "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject(
-                "forecast").getJSONArray(
-                "conditions").getJSONObject(2).getJSONObject("wind").get("direction")
+                    + "\n" +
+                    "Second Forecast Report Time: " + secondPeriod
 
-        );
+                    + "\n" +
+                    "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject(
+                    "forecast").getJSONArray(
+                    "conditions").getJSONObject(2).getJSONObject("wind").get("speedKts"))
 
-        writeJson(theWeatherResponse, theAirportResponse, windDegrees, mphSpeed, firstPeriod, secondPeriod, temp);
+                    + "\n" +
+                    "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject(
+                    "forecast").getJSONArray(
+                    "conditions").getJSONObject(2).getJSONObject("wind").get("direction")
 
+            );
+
+            writeJson(theWeatherResponse, theAirportResponse, windDegrees, mphSpeed, firstPeriod, secondPeriod, temp);
+        }
     }
 
     /**
@@ -262,6 +269,7 @@ public class ForeFlightProject {
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
             RESPONSE_CODE = con.getResponseCode();
             System.out.println("\nSending 'GET' request to URL : " + urlForAirport);
+            System.out.println("ac " + ac);
             System.out.println("Response Code : " + RESPONSE_CODE);
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
