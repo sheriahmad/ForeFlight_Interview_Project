@@ -1,3 +1,7 @@
+/*
+ * This programs takes in airport identifier, makes the call to two APIs
+ * and outputs the data in resource.json file.
+ */
 package com.company.foreflightInterviewProject;
 
 import org.json.JSONException;
@@ -12,10 +16,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.io.InputStream;
 
-
 /**
- *
+ * @author sahmad
+ * @version 1.0
  */
+
 public class ForeFlightProject {
 
     private static StringBuffer AIRPORT_RESPONSE;
@@ -27,7 +32,6 @@ public class ForeFlightProject {
 
 
     /**
-     *
      * @param args
      * @throws IOException
      * @throws JSONException
@@ -44,8 +48,7 @@ public class ForeFlightProject {
             ex.printStackTrace();
         }
 
-        // Create a Scanner object
-        //Scanner scanner = new Scanner(System.in);
+        // Create a bufferReader
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter Airport Code: ");
 
@@ -53,13 +56,13 @@ public class ForeFlightProject {
 
         WEATHER_RESPONSE = new StringBuffer();
         AIRPORT_RESPONSE = new StringBuffer();
-        
 
-        //API call to airports
+
+        //API call to the airports
         callAPI(airportCode);
 
 
-        //Read JSON response and print
+        //Read JSON response and print to console
         JSONObject theAirportResponse = new JSONObject(AIRPORT_RESPONSE.toString());
         JSONObject theWeatherResponse = new JSONObject(WEATHER_RESPONSE.toString());
 
@@ -69,12 +72,13 @@ public class ForeFlightProject {
         int windDegrees = (int) theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
                 getJSONObject("wind").get("from");
 
-        SimpleDateFormat inputFormat  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+SSSS");
-        Date firstPeriod = inputFormat.parse(String.valueOf( theWeatherResponse.getJSONObject("report").getJSONObject(
-                "forecast").getJSONArray(
-                "conditions").getJSONObject(1).getJSONObject("period").get("dateStart")));
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+SSSS");
+        Date firstPeriod = inputFormat.parse(String.valueOf(theWeatherResponse.getJSONObject("report").
+                getJSONObject("forecast").getJSONArray("conditions").getJSONObject(1).getJSONObject("period").
+                get("dateStart")));
 
-        Date secondPeriod = inputFormat.parse(String.valueOf(theWeatherResponse.getJSONObject("report").getJSONObject("forecast").getJSONArray(
+        Date secondPeriod = inputFormat.parse(String.valueOf(theWeatherResponse.getJSONObject("report").
+                getJSONObject("forecast").getJSONArray(
                 "conditions").getJSONObject(2).getJSONObject("period").get("dateStart")));
 
         System.out.println("Result after Reading JSON Response"
@@ -98,12 +102,12 @@ public class ForeFlightProject {
                 "Temperature in Fahrenheit: " + convertTemp(temp)
 
                 + "\n" +
-                "Relative Humidity: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get(
-                "relativeHumidity")
+                "Relative Humidity: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
+                get("relativeHumidity")
 
                 + "\n" +
-                "Cloud Coverage: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").get(
-                "cloudLayers")
+                "Cloud Coverage: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
+                get("cloudLayers")
 
                 + "\n" +
                 "Distance SM: " + theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
@@ -119,36 +123,33 @@ public class ForeFlightProject {
                 "First Forecast Report Time: " + firstPeriod
 
                 + "\n" +
-                "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject(
-                        "forecast").getJSONArray(
-                "conditions").getJSONObject(1).getJSONObject("wind").get("speedKts"))
+                "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").
+                getJSONObject("forecast").getJSONArray("conditions").getJSONObject(1).getJSONObject("wind").
+                get("speedKts"))
 
                 + "\n" +
                 "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject(
-                        "forecast").getJSONArray(
+                "forecast").getJSONArray(
                 "conditions").getJSONObject(1).getJSONObject("wind").get("direction")
 
                 + "\n" +
                 "Second Forecast Report Time: " + secondPeriod
 
-                + "\n" +
-                "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject(
-                        "forecast").getJSONArray(
-                "conditions").getJSONObject(2).getJSONObject("wind").get("speedKts"))
+                + "\n" + "Forecasted Wind: " + convertSpeed((Double) theWeatherResponse.getJSONObject("report")
+                .getJSONObject("forecast").getJSONArray("conditions").getJSONObject(2).getJSONObject("wind").
+                        get("speedKts"))
 
                 + "\n" +
-                "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject(
-                "forecast").getJSONArray(
-                "conditions").getJSONObject(2).getJSONObject("wind").get("direction")
+                "Wind Direction: " + theWeatherResponse.getJSONObject("report").getJSONObject("forecast").
+                getJSONArray("conditions").getJSONObject(2).getJSONObject("wind").get("direction")
 
         );
 
+        //call to writeJson method that writes to response.json
         writeJson(theWeatherResponse, theAirportResponse, windDegrees, mphSpeed, firstPeriod, secondPeriod, temp);
-
     }
 
     /**
-     *
      * @param theWeatherResponse
      * @param theAirportResponse
      * @param windDegrees
@@ -159,12 +160,12 @@ public class ForeFlightProject {
      * @throws JSONException
      */
     public static void writeJson(JSONObject theWeatherResponse, JSONObject theAirportResponse, int windDegrees,
-                                 double mphSpeed, Date firstPeriod
-            , Date secondPeriod, double temp) throws JSONException {
-        //Write Json
+                                 double mphSpeed, Date firstPeriod, Date secondPeriod, double temp)
+            throws JSONException {
+        //Create json object.
         jsonResponseObject = new JSONObject();
 
-        //Overwrite random order
+        //Overwrite random JSON order
         try {
             Field changeMap = jsonResponseObject.getClass().getDeclaredField("map");
             changeMap.setAccessible(true);
@@ -174,12 +175,15 @@ public class ForeFlightProject {
             e.printStackTrace();
         }
 
+        //Current weather
         JSONObject currentWeather = new JSONObject();
 
-        currentWeather.put("distanceSM: ", theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
-                getJSONObject("visibility").get("distanceSm"));
-        currentWeather.put("windSpeedMPH: ", String.format("%.2f", convertSpeed(mphSpeed)));
-        currentWeather.put("windDirection: ", convertDegrees(windDegrees));
+        //Current Weather Node
+        currentWeather.put("fahrenheitTemperature", convertTemp(temp));
+        currentWeather.put("relativeHumidity", theWeatherResponse.getJSONObject("report").getJSONObject(
+                "conditions").get("relativeHumidity"));
+        currentWeather.put("cloudCoverage", theWeatherResponse.getJSONObject("report").getJSONObject("conditions").
+                get("cloudLayers"));
 
         JSONObject forecastWeather = new JSONObject();
         try {
@@ -194,11 +198,11 @@ public class ForeFlightProject {
         //Forecast
         //First Forecast Node
         JSONObject firstForecastNode = new JSONObject();
-        firstForecastNode.put( "time: ", firstPeriod);
-        firstForecastNode.put("windSpeed: ",
+        firstForecastNode.put("time", firstPeriod);
+        firstForecastNode.put("windSpeed",
                 convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject("forecast").getJSONArray(
                         "conditions").getJSONObject(1).getJSONObject("wind").get("speedKts")));
-        firstForecastNode.put("windDirection: ", theWeatherResponse.getJSONObject("report").getJSONObject(
+        firstForecastNode.put("windDirection", theWeatherResponse.getJSONObject("report").getJSONObject(
                 "forecast").getJSONArray(
                 "conditions").getJSONObject(1).getJSONObject("wind").get("direction"));
         forecastWeather.put("firstForecast", firstForecastNode);
@@ -206,24 +210,25 @@ public class ForeFlightProject {
 
         //Second Forecast Node
         JSONObject secondForecastNode = new JSONObject();
-        secondForecastNode.put( "time: ", secondPeriod);
-        secondForecastNode.put("windSpeed: ",
+        secondForecastNode.put("time", secondPeriod);
+        secondForecastNode.put("windSpeed",
                 convertSpeed((Double) theWeatherResponse.getJSONObject("report").getJSONObject("forecast").getJSONArray(
                         "conditions").getJSONObject(2).getJSONObject("wind").get("speedKts")));
-        secondForecastNode.put("windDirection: ", theWeatherResponse.getJSONObject("report").getJSONObject(
+        secondForecastNode.put("windDirection", theWeatherResponse.getJSONObject("report").getJSONObject(
                 "forecast").getJSONArray(
                 "conditions").getJSONObject(2).getJSONObject("wind").get("direction"));
 
         forecastWeather.put("secondForecast", secondForecastNode);
 
 
+        //Json schema
         jsonResponseObject.put("Identifier", theAirportResponse.getString("icao"));
         jsonResponseObject.put("name", theAirportResponse.getString("name"));
         jsonResponseObject.put("runways", theAirportResponse.get("runways"));
-        jsonResponseObject.put("Latitude : ", theAirportResponse.get("latitudeSecsNorth"));
-        jsonResponseObject.put("Longitude : ", theAirportResponse.get("longitudeSecsEast"));
-        jsonResponseObject.put("fahrenheitTemperature: ", convertTemp(temp));
-        jsonResponseObject.put("relativeHumidity: ", theWeatherResponse.getJSONObject("report").getJSONObject(
+        jsonResponseObject.put("Latitude", theAirportResponse.get("latitudeSecsNorth"));
+        jsonResponseObject.put("Longitude", theAirportResponse.get("longitudeSecsEast"));
+        jsonResponseObject.put("fahrenheitTemperature", convertTemp(temp));
+        jsonResponseObject.put("relativeHumidity", theWeatherResponse.getJSONObject("report").getJSONObject(
                 "conditions").get("relativeHumidity"));
         jsonResponseObject.put("currentWeatherReport", currentWeather);
 
@@ -247,10 +252,12 @@ public class ForeFlightProject {
      * @param ac
      */
     public static void callAPI(String ac) {
+        //call to airport API
         try {
             URL urlForAirport = new URL("https://qa.foreflight.com/airports/" + ac);
             HttpURLConnection con = (HttpURLConnection) urlForAirport.openConnection();
 
+            //add request header
             con.setRequestProperty(prop.getProperty("headerKay"), prop.getProperty("headerValue"));
             con.setRequestProperty("Authorization", "Basic " +
                     "ZmYtaW50ZXJ2aWV3OkAtKkt6VS4qZHRQOWRrb0U3UHJ5TDJvalkhdURWLjZKSkdDOQ==");
@@ -258,7 +265,6 @@ public class ForeFlightProject {
 
             con.setRequestMethod("GET");
 
-            //add request header
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
             RESPONSE_CODE = con.getResponseCode();
             System.out.println("\nSending 'GET' request to URL : " + urlForAirport);
@@ -274,22 +280,22 @@ public class ForeFlightProject {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Airport API call not reachable.");
         }
 
-        //API call to weather
+        //Call to weather API
         try {
             URL urlForWeather = new URL("https://qa.foreflight.com/weather/report/" + ac);
             HttpURLConnection con = (HttpURLConnection) urlForWeather.openConnection();
 
+            //add request header
             con.setRequestProperty(prop.getProperty("headerKay"), prop.getProperty("headerValue"));
             con.setRequestProperty("Authorization", "Basic " +
                     "ZmYtaW50ZXJ2aWV3OkAtKkt6VS4qZHRQOWRrb0U3UHJ5TDJvalkhdURWLjZKSkdDOQ==");
             con.setRequestProperty(prop.getProperty("username"), prop.getProperty("password"));
 
-
             con.setRequestMethod("GET");
 
-            //add request header
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
             RESPONSE_CODE = con.getResponseCode();
             System.out.println("\nSending 'GET' request to URL : " + urlForWeather);
@@ -305,13 +311,12 @@ public class ForeFlightProject {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Weather API call not reachable.");
         }
-
     }
 
 
     /**
-     *
      * @param celciusTemp
      * @return fahrenheitTemp
      */
@@ -322,18 +327,15 @@ public class ForeFlightProject {
     }
 
     /**
-     *
      * @param ktsSpeed
      * @return miles per hour
      */
     public static double convertSpeed(double ktsSpeed) {
         double mphSpeed = ktsSpeed * 1.15;
-
         return mphSpeed;
     }
 
     /**
-     *
      * @param degrees
      * @return cardinal direction
      */
